@@ -1,0 +1,17 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gitlab-oidc-validator
+  config:
+    import: classpath:allowed-workspaces.yml
+
+gitlab:
+  oidc:
+    issuer: https://eros.butterflycluster.com
+    audience: https://api.butterflycluster.com
+
+logging:
+  level:
+    org.springframework.security: DEBUG

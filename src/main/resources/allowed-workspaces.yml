@@ -1,0 +1,8 @@
+allowed:
+  workspaces:
+    - namespace: myorg/platform
+      product: core-api
+    - namespace: myorg/services
+      product: payment-service
+    - namespace: myorg/frontend
+      product: web-app
