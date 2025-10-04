@@ -1,0 +1,17 @@
+stages:
+  - deploy
+
+deploy:
+  stage: deploy
+  image: curlimages/curl:latest
+  id_tokens:
+    GITLAB_OIDC_TOKEN:
+      aud: https://api.butterflycluster.com
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+  script:
+    - |
+      curl -X POST https://api.butterflycluster.com/api/v1/deploy \
+        -H "Authorization: Bearer ${GITLAB_OIDC_TOKEN}" \
+        -H "Content-Type: application/json" \
+        -d '{"action": "deploy", "version": "'"${CI_COMMIT_SHA}"'"}'

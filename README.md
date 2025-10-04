@@ -2,19 +2,14 @@
 
 Production-ready Spring Boot API that validates GitLab OIDC pipeline identity tokens.
 
-## GitLab Pipeline Setup
+## Overview
 
-Add to your `.gitlab-ci.yml`:
+This project provides:
+1. **OIDC Validator API** - Spring Boot app that validates GitLab OIDC tokens
+2. **Deployment Pipeline** - GitLab CI that builds and deploys the API via Docker
+3. **Example Caller Pipeline** - Sample pipeline for projects calling the API (see `example-caller-pipeline/`)
 
-```yaml
-id_tokens:
-  GITLAB_OIDC_TOKEN:
-    aud: https://api.butterflycluster.com
-```
-
-The pipeline automatically sends this token when calling the API.
-
-## Spring Boot Validation
+## Validation
 
 The API validates:
 1. **JWT signature** - Via GitLab's OIDC issuer (https://eros.butterflycluster.com) and JWKS
@@ -33,28 +28,48 @@ allowed:
       product: core-api
 ```
 
-Update `application.yml` with your audience:
+Update `src/main/resources/application.yml`:
 
 ```yaml
 gitlab:
   oidc:
     issuer: https://eros.butterflycluster.com
-    audience: https://api.butterflycluster.com  # Must match pipeline aud
+    audience: https://api.butterflycluster.com
 ```
 
-## Running
+## Deployment
+
+### Using Docker Compose
+
+```bash
+docker-compose up -d
+```
+
+### Using GitLab CI
+
+The `.gitlab-ci.yml` automatically:
+1. Builds Docker image
+2. Pushes to GitLab Container Registry
+3. Deploys to server via SSH
+
+Required CI/CD variables:
+- `SSH_PRIVATE_KEY` - SSH key for deployment server
+- `DEPLOY_HOST` - Deployment server hostname
+- `DEPLOY_USER` - SSH user for deployment
+
+## For Calling Projects
+
+See `example-caller-pipeline/` for a complete example of how to call this API from your GitLab pipeline.
+
+Copy `example-caller-pipeline/.gitlab-ci.yml` to your project and ensure:
+1. Your namespace is in `allowed-workspaces.yml`
+2. Pipeline runs from `main` branch
+3. `aud` matches: `https://api.butterflycluster.com`
+
+## Local Development
 
 ```bash
 mvn spring-boot:run
-```
-
-## Testing
-
-```bash
-curl -X POST http://localhost:8080/api/v1/deploy \
-  -H "Authorization: Bearer <GITLAB_OIDC_TOKEN>" \
-  -H "Content-Type: application/json" \
-  -d '{"action": "deploy", "version": "abc123"}'
 ```
 
 ## GitLab OIDC Token Claims
