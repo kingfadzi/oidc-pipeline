@@ -48,7 +48,7 @@ allowed:
 
 ## Response Format
 
-Success response includes validated fields and audit trail:
+Success response includes validated fields and audit trail (see [`example-response.json`](example-response.json)):
 
 ```json
 {
@@ -65,12 +65,12 @@ Success response includes validated fields and audit trail:
   },
   "audit": {
     "user": "fadzi",
-    "pipeline_id": "12345",
-    "job_id": "67890",
-    "commit_sha": "abc123def456",
-    "issued_at": "2025-10-04T19:00:00Z",
-    "expires_at": "2025-10-04T20:00:00Z",
-    "ip_address": "10.0.0.1"
+    "pipeline_id": "123456789",
+    "job_id": "987654321",
+    "commit_sha": "abc123def456789012345678901234567890abcd",
+    "issued_at": "2025-10-04T19:15:30Z",
+    "expires_at": "2025-10-04T20:15:30Z",
+    "ip_address": "10.244.0.15"
   },
   "request": {
     "action": "deploy",
@@ -131,6 +131,17 @@ deploy:
 ```bash
 mvn spring-boot:run
 ```
+
+## Testing
+
+Run unit tests:
+```bash
+mvn test
+```
+
+Tests include:
+- Validator tests (SecurityConfigTest)
+- Controller integration tests (DeployControllerTest)
 
 ## GitLab OIDC Token Claims
 

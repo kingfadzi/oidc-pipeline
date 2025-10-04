@@ -55,7 +55,7 @@ public class SecurityConfig {
         return decoder;
     }
 
-    private OAuth2TokenValidator<Jwt> audienceValidator() {
+    OAuth2TokenValidator<Jwt> audienceValidator() {
         return token -> {
             List<String> audiences = token.getAudience();
             if (audiences.contains(audience)) {
@@ -68,7 +68,7 @@ public class SecurityConfig {
         };
     }
 
-    private OAuth2TokenValidator<Jwt> branchValidator(WorkspaceConfig config) {
+    OAuth2TokenValidator<Jwt> branchValidator(WorkspaceConfig config) {
         return token -> {
             String ref = token.getClaimAsString("ref");
             String branch = ref != null ? ref.replace("refs/heads/", "") : null;
@@ -100,7 +100,7 @@ public class SecurityConfig {
         };
     }
 
-    private OAuth2TokenValidator<Jwt> workspaceValidator(WorkspaceConfig config) {
+    OAuth2TokenValidator<Jwt> workspaceValidator(WorkspaceConfig config) {
         return token -> {
             String namespacePath = token.getClaimAsString("namespace_path");
 
@@ -125,7 +125,7 @@ public class SecurityConfig {
         };
     }
 
-    private OAuth2TokenValidator<Jwt> projectPathValidator(WorkspaceConfig config) {
+    OAuth2TokenValidator<Jwt> projectPathValidator(WorkspaceConfig config) {
         return token -> {
             String projectPath = token.getClaimAsString("project_path");
             String namespacePath = token.getClaimAsString("namespace_path");
@@ -156,7 +156,7 @@ public class SecurityConfig {
         };
     }
 
-    private OAuth2TokenValidator<Jwt> pipelineSourceValidator() {
+    OAuth2TokenValidator<Jwt> pipelineSourceValidator() {
         return token -> {
             String pipelineSource = token.getClaimAsString("pipeline_source");
 
@@ -179,7 +179,7 @@ public class SecurityConfig {
         };
     }
 
-    private OAuth2TokenValidator<Jwt> environmentValidator(WorkspaceConfig config) {
+    OAuth2TokenValidator<Jwt> environmentValidator(WorkspaceConfig config) {
         return token -> {
             String environment = token.getClaimAsString("environment");
             String namespacePath = token.getClaimAsString("namespace_path");
@@ -208,7 +208,7 @@ public class SecurityConfig {
         };
     }
 
-    private OAuth2TokenValidator<Jwt> protectedBranchValidator() {
+    OAuth2TokenValidator<Jwt> protectedBranchValidator() {
         return token -> {
             Boolean refProtected = token.getClaim("ref_protected");
 

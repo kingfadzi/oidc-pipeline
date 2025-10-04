@@ -1,0 +1,26 @@
+{
+  "status": "success",
+  "message": "Deployment accepted",
+  "validated": {
+    "audience": "https://api.butterflycluster.com",
+    "namespace_path": "myorg/platform",
+    "project_path": "myorg/platform/core-api",
+    "branch": "main",
+    "pipeline_source": "push",
+    "environment": "production",
+    "ref_protected": true
+  },
+  "audit": {
+    "user": "fadzi",
+    "pipeline_id": "123456789",
+    "job_id": "987654321",
+    "commit_sha": "abc123def456789012345678901234567890abcd",
+    "issued_at": "2025-10-04T19:15:30Z",
+    "expires_at": "2025-10-04T20:15:30Z",
+    "ip_address": "10.244.0.15"
+  },
+  "request": {
+    "action": "deploy",
+    "version": "v1.2.3"
+  }
+}
