@@ -8,8 +8,28 @@ data:
     allowed:
       workspaces:
         - namespace: myorg/platform
+          project: myorg/platform/core-api
           product: core-api
+          branches:
+            - main
+            - production
+          environments:
+            - production
+            - staging
         - namespace: myorg/services
+          project: myorg/services/payment-service
           product: payment-service
+          branches:
+            - main
+          environments:
+            - production
         - namespace: myorg/frontend
+          project: myorg/frontend/web-app
           product: web-app
+          branches:
+            - main
+            - release
+          environments:
+            - production
+            - staging
+            - development

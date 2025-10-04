@@ -15,6 +15,9 @@ public class WorkspaceConfig {
     @Data
     public static class Workspace {
         private String namespace;
+        private String project;
         private String product;
+        private List<String> branches;
+        private List<String> environments;
     }
 }
