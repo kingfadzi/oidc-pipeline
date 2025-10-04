@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: allowed-workspaces
+  namespace: oidc-validator
+data:
+  allowed-workspaces.yml: |
+    allowed:
+      workspaces:
+        - namespace: myorg/platform
+          product: core-api
+        - namespace: myorg/services
+          product: payment-service
+        - namespace: myorg/frontend
+          product: web-app

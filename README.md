@@ -2,13 +2,6 @@
 
 Production-ready Spring Boot API that validates GitLab OIDC pipeline identity tokens.
 
-## Overview
-
-This project provides:
-1. **OIDC Validator API** - Spring Boot app that validates GitLab OIDC tokens
-2. **Deployment Pipeline** - GitLab CI that builds and deploys the API via Docker
-3. **Example Caller Pipeline** - Sample pipeline for projects calling the API (see `example-caller-pipeline/`)
-
 ## Validation
 
 The API validates:
@@ -19,7 +12,7 @@ The API validates:
 
 ## Configuration
 
-Edit `src/main/resources/allowed-workspaces.yml`:
+Edit allowed workspaces in `k8s/configmap.yaml` (for k8s) or `src/main/resources/allowed-workspaces.yml` (for local):
 
 ```yaml
 allowed:
@@ -28,43 +21,51 @@ allowed:
       product: core-api
 ```
 
-Update `src/main/resources/application.yml`:
-
-```yaml
-gitlab:
-  oidc:
-    issuer: https://eros.butterflycluster.com
-    audience: https://api.butterflycluster.com
-```
-
 ## Deployment
 
-### Using Docker Compose
+### Kubernetes (Production)
+
+1. Update image in `k8s/deployment.yaml`:
+   ```yaml
+   image: registry.gitlab.com/yourorg/oidc-pipeline:latest
+   ```
+
+2. Apply manifests:
+   ```bash
+   kubectl apply -f k8s/
+   ```
+
+3. GitLab CI automatically deploys on push to `main` branch
+
+Required GitLab CI/CD variables:
+- `KUBE_CONTEXT` - Kubernetes context for deployment
+
+### Local (Docker Compose)
 
 ```bash
 docker-compose up -d
 ```
 
-### Using GitLab CI
+Access at http://localhost:8080
 
-The `.gitlab-ci.yml` automatically:
-1. Builds Docker image
-2. Pushes to GitLab Container Registry
-3. Deploys to server via SSH
+## Example: Calling from GitLab Pipeline
 
-Required CI/CD variables:
-- `SSH_PRIVATE_KEY` - SSH key for deployment server
-- `DEPLOY_HOST` - Deployment server hostname
-- `DEPLOY_USER` - SSH user for deployment
-
-## For Calling Projects
-
-See `example-caller-pipeline/` for a complete example of how to call this API from your GitLab pipeline.
-
-Copy `example-caller-pipeline/.gitlab-ci.yml` to your project and ensure:
-1. Your namespace is in `allowed-workspaces.yml`
-2. Pipeline runs from `main` branch
-3. `aud` matches: `https://api.butterflycluster.com`
+```yaml
+deploy:
+  stage: deploy
+  image: curlimages/curl:latest
+  id_tokens:
+    GITLAB_OIDC_TOKEN:
+      aud: https://api.butterflycluster.com
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+  script:
+    - |
+      curl -X POST https://api.butterflycluster.com/api/v1/deploy \
+        -H "Authorization: Bearer ${GITLAB_OIDC_TOKEN}" \
+        -H "Content-Type: application/json" \
+        -d '{"action": "deploy", "version": "'"${CI_COMMIT_SHA}"'"}'
+```
 
 ## Local Development
 
@@ -74,7 +75,6 @@ mvn spring-boot:run
 
 ## GitLab OIDC Token Claims
 
-The token includes:
 - `namespace_path` - GitLab group/namespace
 - `project_path` - Full project path
 - `ref` - Branch reference (refs/heads/main)

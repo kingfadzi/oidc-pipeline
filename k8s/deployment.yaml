@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oidc-validator
+  namespace: oidc-validator
+  labels:
+    app: oidc-validator
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: oidc-validator
+  template:
+    metadata:
+      labels:
+        app: oidc-validator
+    spec:
+      containers:
+      - name: oidc-validator
+        image: registry.gitlab.com/yourorg/oidc-pipeline:latest
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "prod"
+        - name: GITLAB_OIDC_ISSUER
+          value: "https://eros.butterflycluster.com"
+        - name: GITLAB_OIDC_AUDIENCE
+          value: "https://api.butterflycluster.com"
+        - name: SPRING_CONFIG_IMPORT
+          value: "file:/config/allowed-workspaces.yml"
+        volumeMounts:
+        - name: config
+          mountPath: /config
+          readOnly: true
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 20
+          periodSeconds: 5
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+      volumes:
+      - name: config
+        configMap:
+          name: allowed-workspaces

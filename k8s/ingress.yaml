@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oidc-validator
+  namespace: oidc-validator
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - api.butterflycluster.com
+    secretName: oidc-validator-tls
+  rules:
+  - host: api.butterflycluster.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: oidc-validator
+            port:
+              number: 80
