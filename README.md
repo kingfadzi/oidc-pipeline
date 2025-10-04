@@ -58,6 +58,7 @@ Success response includes validated fields and audit trail (see [`example-respon
     "audience": "https://api.butterflycluster.com",
     "namespace_path": "myorg/platform",
     "project_path": "myorg/platform/core-api",
+    "product": "core-api",
     "branch": "main",
     "pipeline_source": "push",
     "environment": "production",

@@ -35,6 +35,7 @@ class DeployControllerTest {
             .andExpect(jsonPath("$.message").value("Deployment accepted"))
             .andExpect(jsonPath("$.validated.namespace_path").value("myorg/platform"))
             .andExpect(jsonPath("$.validated.project_path").value("myorg/platform/core-api"))
+            .andExpect(jsonPath("$.validated.product").value("core-api"))
             .andExpect(jsonPath("$.validated.branch").value("main"))
             .andExpect(jsonPath("$.validated.pipeline_source").value("push"))
             .andExpect(jsonPath("$.validated.environment").value("production"))

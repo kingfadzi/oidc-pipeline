@@ -1,7 +1,9 @@
 package com.example.oidc;
 
+import com.example.oidc.model.WorkspaceConfig;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -16,6 +18,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1")
 public class DeployController {
+
+    @Autowired
+    private WorkspaceConfig workspaceConfig;
 
     @PostMapping("/deploy")
     public ResponseEntity<?> deploy(
@@ -33,6 +38,13 @@ public class DeployController {
         Boolean refProtected = jwt.getClaim("ref_protected");
         String audience = jwt.getAudience() != null && !jwt.getAudience().isEmpty()
             ? jwt.getAudience().get(0) : null;
+
+        // Look up product from workspace config
+        String product = workspaceConfig.getWorkspaces().stream()
+            .filter(ws -> ws.getNamespace().equals(namespacePath))
+            .map(WorkspaceConfig.Workspace::getProduct)
+            .findFirst()
+            .orElse(null);
 
         // Extract audit fields (logging only)
         String user = jwt.getClaimAsString("user_login");
@@ -58,6 +70,7 @@ public class DeployController {
         validated.put("audience", audience);
         validated.put("namespace_path", namespacePath);
         validated.put("project_path", projectPath);
+        validated.put("product", product);
         validated.put("branch", branch);
         validated.put("pipeline_source", pipelineSource);
         validated.put("environment", environment);
